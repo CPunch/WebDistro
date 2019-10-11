@@ -1,0 +1,22 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  background: #282828;
+}
+
+.full-size {
+  height: 100%;
+  width: 100%;
+}
+
+.banner{
+	padding: 10px;
+	position: relative;
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+.banner-error {
+	color: #fff;
+	background-color: #ff4e23;
+}
