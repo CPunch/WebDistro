@@ -55,12 +55,11 @@ module.exports = function(server) {
                 return 2; // invlaid password hash
             
             client.join(id, function(){
-                currentTerms[id].term.on('data', function(data) {
-                    client.emit('data', data);
-                });
-    
                 currentConnections[client.id].session = {id: id, raw: currentTerms[id]};
                 currentTerms[id].users[client.id] = client;
+
+                // send buffer to client, the client will now play catch-up
+                client.emit('data', currentTerms[id].buffer);
             });
 
             return null;
@@ -105,6 +104,7 @@ module.exports = function(server) {
 
         currentTerms[id] = {users: {}};
         currentTerms[id].pass = crypto.createHash("sha256").update(pass).digest('hex'); // hash pass to compare later
+        currentTerms[id].buffer = "";
         
         // TODO: this might maybe be a bad idea to directly pass id??? hmm not sure, maybe change?
         currentTerms[id].term = pty.spawn('docker', ['run', '-ti', '--name', id, '--memory=100M', '--rm', '--cpus=1', image, 'bash'], {
@@ -114,11 +114,18 @@ module.exports = function(server) {
             cwd: __dirname
         });
 
+        currentTerms[id].term.on('data', function(data) {
+            // send data to clients connected to this terminal
+            io.to(id).emit('data', data);
+
+            // save to buffer
+            currentTerms[id].buffer = currentTerms[id].buffer + data;
+        });
+
         // make sure docker container is cleared and cleaned when terminal is killed
         currentTerms[id].term.on('exit', function() {
             closeTerminal(id);
         });
-
 
         currentTerms[id].term.write('clear\n', function(){
             switch(type)

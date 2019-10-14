@@ -1,12 +1,12 @@
 $(function(){
     let socket = io();
-    let currentSession = null;
     
     // ===== UI STUFF =====
 
     let infoMenu = $('#infoModal');
     
     let tabBanner = document.getElementById("tabBanner");
+    let termThemeInput = document.getElementById("termThemeInput");
 
     // joingame
     let joinSessInput = document.getElementById("joinSessInput");
@@ -21,6 +21,63 @@ $(function(){
     let newImageInput = document.getElementById("newImageInput");
     let newImageIcon = document.getElementById("newImageIcon");
     let newButton = document.getElementById("newSessButton");
+
+    // Terminal themes
+    const Term_Themes = {
+        ["Gruvbox Dark"]: { 
+            background: '#282828',
+            foreground: '#FBF1C7',
+            black: '#282828',
+            white: '#FBF1C7',
+            brightRed: '#FB4934',
+            brightGreen: '#B8BB26',
+            brightYellow: '#FABD2F',
+            brightBlue: '#83A598',
+            brightMagenta: '#D3869B',
+            brightCyan: '#8EC07C',
+            red: '#CC241D',
+            green: '#98971A',
+            yellow: '#D79921',
+            blue: '#458588',
+            magenta: '#B16286',
+            cyan: '#689D6A'
+        },
+        ["Gruvbox Light"]: { 
+            background: '#FBF1C7',
+            foreground: '#3C3836',
+            black: '#282828',
+            white: '#FBF1C7',
+            brightRed: '#9D0006',
+            brightGreen: '#79740D',
+            brightYellow: '#B57614',
+            brightBlue: '#076678',
+            brightMagenta: '#8F3F71',
+            brightCyan: '#427B58',
+            red: '#CC241D',
+            green: '#98971A',
+            yellow: '#D79921',
+            blue: '#458588',
+            magenta: '#B16286',
+            cyan: '#689D6A',
+            cursor: "#3C3836"
+        }, 
+        ["Solarized"]: {
+
+        }
+    }
+
+    Object.keys(Term_Themes).forEach(function(key){
+        var option = document.createElement("option");
+        option.innerText = key;
+        option.value = key;
+        termThemeInput.appendChild(option);
+    });
+
+    function updateTheme(theme)
+    {
+        document.body.style.background = Term_Themes[theme].background;
+        term.setOption("theme", Term_Themes[theme]);
+    }
 
     function modalError(msg)
     {
@@ -121,26 +178,13 @@ $(function(){
         cols: 120,
         rows: 120,
         cursorBlink: true,
-        'theme': { 
-            background: '#282828',
-            foreground: '#FBF1C7',
-            black: '#282828',
-            white: '#FBF1C7',
-            brightRed: '#FB4934',
-            brightGreen: '#B8BB26',
-            brightYellow: '#FABD2F',
-            brightBlue: '#83A598',
-            brightMagenta: '#D3869B',
-            brightCyan: '#8EC07C',
-            red: '#CC241D',
-            green: '#98971A',
-            yellow: '#D79921',
-            blue: '#458588',
-            magenta: '#B16286',
-            cyan: '#689D6A',
-
-        }
+        'theme': Term_Themes["Gruvbox Dark"]
     });
+
+    termThemeInput.onchange = function()
+    {
+        updateTheme(termThemeInput.value)
+    }
 
     var fitAddon = new FitAddon.FitAddon()
     term.loadAddon(fitAddon);
@@ -168,6 +212,8 @@ $(function(){
         term.clear();
         fitAddon.fit();
     });
+    
+    updateTheme("Gruvbox Dark");
 
     // show after stuff is done loading lol
     infoMenu.modal({
@@ -175,4 +221,5 @@ $(function(){
         keyboard: false  // to prevent closing with Esc button (if you want this too)
     });
     $('.modal-backdrop').removeClass("modal-backdrop");
+
 });
