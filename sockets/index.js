@@ -107,7 +107,7 @@ module.exports = function(server) {
         currentTerms[id].buffer = "";
         
         // TODO: this might maybe be a bad idea to directly pass id??? hmm not sure, maybe change?
-        currentTerms[id].term = pty.spawn('docker', ['run', '-ti', '--name', id, '--memory=100M', '--rm', '--cpus=1', image, 'bash'], {
+        currentTerms[id].term = pty.spawn('docker', ['run', '-ti', '--name', id, '--memory=100M', '--cpus=1', '--rm', image, 'bash'], {
             name: 'xterm-256color',
             cols: 120,
             rows: 24,

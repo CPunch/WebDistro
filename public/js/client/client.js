@@ -29,40 +29,39 @@ $(function(){
             foreground: '#FBF1C7',
             black: '#282828',
             white: '#FBF1C7',
-            brightRed: '#FB4934',
-            brightGreen: '#B8BB26',
-            brightYellow: '#FABD2F',
-            brightBlue: '#83A598',
-            brightMagenta: '#D3869B',
-            brightCyan: '#8EC07C',
-            red: '#CC241D',
-            green: '#98971A',
-            yellow: '#D79921',
-            blue: '#458588',
-            magenta: '#B16286',
-            cyan: '#689D6A'
-        },
-        ["Gruvbox Light"]: { 
-            background: '#FBF1C7',
-            foreground: '#3C3836',
-            black: '#282828',
-            white: '#FBF1C7',
-            brightRed: '#9D0006',
-            brightGreen: '#79740D',
-            brightYellow: '#B57614',
-            brightBlue: '#076678',
-            brightMagenta: '#8F3F71',
-            brightCyan: '#427B58',
             red: '#CC241D',
             green: '#98971A',
             yellow: '#D79921',
             blue: '#458588',
             magenta: '#B16286',
             cyan: '#689D6A',
+            cursor: "#FBF1C7"
+        },
+        ["Gruvbox Light"]: { 
+            background: '#FBF1C7',
+            foreground: '#3C3836',
+            black: '#282828',
+            white: '#FBF1C7',
+            red: '#FB4934',
+            green: '#B8BB26',
+            yellow: '#FABD2F',
+            blue: '#83A598',
+            magenta: '#D3869B',
+            cyan: '#8EC07C',
             cursor: "#3C3836"
         }, 
-        ["Solarized"]: {
-
+        ["Solarized Dark"]: {
+            background: '#002b36',
+            foreground: '#93a1a1',
+            black: '#002b36',
+            white: '#93a1a1',
+            red: '#dc322f',
+            green: '#859900',
+            yellow: '#b58900',
+            blue: '#268bd2',
+            magenta: '#d33682',
+            cyan: '#2aa198',
+            cursor: "#93a1a1"
         }
     }
 
@@ -110,7 +109,7 @@ $(function(){
                 newImageIcon.className = "fab fa-ubuntu";
                 break;
             case 1: // Debian
-                newImageIcon.className = "fab fa-debian"
+                newImageIcon.className = "fab fa-debian"; // curse you fontawesome!!!!!!!!!!!!!!
                 break;
             case 2: // Fedora
                 newImageIcon.className = "fab fa-fedora";
