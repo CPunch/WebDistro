@@ -10,7 +10,12 @@ module.exports = function(server) {
 
     function createConnection(client)
     {
-        currentConnections[client.id] = {socket: client};
+        currentConnections[client.id] = {name: "Guest"+currentConnections.length};
+    }
+
+    function setConnectionName(client, n)
+    {
+        currentConnections[client.id].name = n;
     }
 
     function closeConnection(client)
@@ -28,20 +33,27 @@ module.exports = function(server) {
         if (currentConnections[client.id].session != null)
         {
             var id = currentConnections[client.id].session.id;
+            var clientID = client.id;
 
-            client.leave(id);
-            
-            delete currentConnections[client.id].session;
-            
-            if (currentTerms[id] != null)
-            {
-                delete currentTerms[id].users[client.id];
-                if (Object.keys(currentTerms[id].users).length <= 0)
+            client.leave(id, function() {
+                
+                if (currentConnections[clientID])
+                    delete currentConnections[clientID].session;
+                
+                if (currentTerms[id] != null)
                 {
-                    console.log("closing " + id);
-                    closeTerminal(id);
+                    delete currentTerms[id].users[clientID];
+                    if (Object.keys(currentTerms[id].users).length <= 0)
+                    {
+                        console.log("closing " + id);
+                        closeTerminal(id);
+                    }
+                    else
+                    {
+                        io.to(id).emit("updateUserList", currentTerms[id].users);
+                    }
                 }
-            }
+            });
         }
     }
 
@@ -54,12 +66,13 @@ module.exports = function(server) {
             if (currentTerms[id].pass != crypto.createHash("sha256").update(pass).digest('hex'))
                 return 2; // invlaid password hash
             
-            client.join(id, function(){
+            client.join(id, function() {
                 currentConnections[client.id].session = {id: id, raw: currentTerms[id]};
-                currentTerms[id].users[client.id] = client;
+                currentTerms[id].users[client.id] = {name: currentConnections[client.id].name};
 
                 // send buffer to client, the client will now play catch-up
                 client.emit('data', currentTerms[id].buffer);
+                io.to(id).emit("updateUserList", currentTerms[id].users);
             });
 
             return null;
@@ -135,7 +148,6 @@ module.exports = function(server) {
                     break;
             }
         });
-        currentTerms[id].users[client.id] = client;
 
         return joinTerminal(client, id, pass);
     }
@@ -148,21 +160,40 @@ module.exports = function(server) {
         });
 
         client.on('data', function(data) {
-            if (typeof(data) == "string" && currentConnections[client.id].session != null)
+            if (data && typeof(data) == "string" && currentConnections[client.id].session != null)
                 currentConnections[client.id].session.raw.term.write(data);
         });
         
         client.on('resize', function(size) {
             if (currentConnections[client.id].session != null)
+            {
+                console.log("resizing");
                 currentConnections[client.id].session.raw.term.resize(size.cols, size.rows);
+            }
         });
 
-        client.on('joinSession', function(sess, pass, callback) {
-            callback(joinTerminal(client, sess, pass));
+        client.on('joinSession', function(sess, pass, nick, callback) {
+            if ((sess && typeof(sess) == "string" && sess.length > 0) && (pass && typeof(pass) == "string" && pass.length > 0) && (nick && typeof(nick) == "string" && nick.length > 0))
+            {
+                setConnectionName(client, nick);
+                callback(joinTerminal(client, sess, pass));
+            }
+            else
+            {
+                callback(0); // incorrect args
+            }
         });
 
-        client.on('newSession', function(sess, pass, type, callback) {
-            callback(createTerminal(client, sess, pass, type));
+        client.on('newSession', function(sess, pass, nick, type, callback) {
+            if ((sess && typeof(sess) == "string" && sess.length > 0) && (pass && typeof(pass) == "string" && pass.length > 0) && (nick && typeof(nick) == "string" && nick.length > 0) && typeof(type) == "number")
+            {
+                setConnectionName(client, nick);
+                callback(createTerminal(client, sess, pass, type));
+            }
+            else
+            {
+                callback(0); // incorrect args
+            }
         });
     });
 };

@@ -15,9 +15,12 @@
     <link href="/css/mdb.min.css" rel="stylesheet">
 
     <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/themes/gruv-dark.css" id="themeCSS">
+
 </head>
 <body>
-    <div id="terminal" class="full-size"></div>
+    <div id="sessionList" class="session-list"></div>
+    <div id="terminal" class="terminal-container"></div>
     <div class="modal fade" id="infoModal">
         <div class="modal-dialog cascading-modal" role="document">
             <!--Content-->
@@ -67,7 +70,7 @@
 
                                 <div class="md-form form-sm mb-4" id="joinKeyForm">
                                     <i class="fas fa-key prefix"></i>
-                                    <input type="text" id="joinKeyInput" class="form-control form-control-sm">
+                                    <input type="password" id="joinKeyInput" class="form-control form-control-sm">
                                     <label for="joinKeyInput">Passcode</label>
                                 </div>
 
@@ -110,7 +113,7 @@
 
                                 <div class="md-form form-sm mb-4" id="newKeyForm">
                                     <i class="fas fa-key prefix"></i>
-                                    <input type="text" id="newKeyInput" class="form-control form-control-sm">
+                                    <input type="password" id="newKeyInput" class="form-control form-control-sm">
                                     <label for="newKeyInput">Passcode</label>
                                 </div>
 

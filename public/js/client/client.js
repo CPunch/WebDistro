@@ -6,7 +6,9 @@ $(function(){
     let infoMenu = $('#infoModal');
     
     let tabBanner = document.getElementById("tabBanner");
+    let sessionList = document.getElementById("sessionList");
     let termThemeInput = document.getElementById("termThemeInput");
+    let themeCSS = document.getElementById("themeCSS");
 
     // joingame
     let joinSessInput = document.getElementById("joinSessInput");
@@ -25,6 +27,7 @@ $(function(){
     // Terminal themes
     const Term_Themes = {
         ["Gruvbox Dark"]: { 
+            stylesheet: '/css/themes/gruv-dark.css',
             background: '#282828',
             foreground: '#FBF1C7',
             black: '#282828',
@@ -38,6 +41,7 @@ $(function(){
             cursor: "#FBF1C7"
         },
         ["Gruvbox Light"]: { 
+            stylesheet: '/css/themes/gruv-light.css',
             background: '#FBF1C7',
             foreground: '#3C3836',
             black: '#282828',
@@ -51,6 +55,7 @@ $(function(){
             cursor: "#3C3836"
         }, 
         ["Solarized Dark"]: {
+            stylesheet: '/css/themes/solarized.css',
             background: '#002b36',
             foreground: '#93a1a1',
             black: '#002b36',
@@ -72,9 +77,25 @@ $(function(){
         termThemeInput.appendChild(option);
     });
 
+    function updateUserList(users)
+    {
+        console.log(users);
+
+        // clear session list
+        sessionList.innerHTML = "";
+
+        for(const key of Object.keys(users))
+        {
+            var badge = document.createElement("span");
+            badge.className = "badge badge-pill";
+            badge.innerText = users[key].name;
+            sessionList.appendChild(badge);
+        }
+    }
+
     function updateTheme(theme)
     {
-        document.body.style.background = Term_Themes[theme].background;
+        themeCSS.href = Term_Themes[theme].stylesheet;
         term.setOption("theme", Term_Themes[theme]);
     }
 
@@ -121,10 +142,11 @@ $(function(){
     {
         var session = joinSessInput.value;
         var passcode = joinKeyInput.value;
+        var nickname = joinNameInput.value;
 
-        if ((session && session.length > 0) && (passcode && passcode.length > 0)) 
+        if ((session && session.length > 0) && (passcode && passcode.length > 0) && (nickname && nickname.length > 0)) 
         {
-            socket.emit("joinSession", session, passcode, function(r)
+            socket.emit("joinSession", session, passcode, nickname, function(r)
             {
                 if (r)
                 {
@@ -147,10 +169,12 @@ $(function(){
     {
         var session = newSessInput.value;
         var passcode = newKeyInput.value;
+        var nickname = newNameInput.value;
 
-        if ((session && session.length > 0) && (passcode && passcode.length > 0)) 
+        if ((session && session.length > 0) && (passcode && passcode.length > 0) && (nickname && nickname.length > 0)) 
         {
-            socket.emit("newSession", session, passcode, parseInt(newImageInput.value), function(r)
+            term.clear();
+            socket.emit("newSession", session, passcode, nickname, parseInt(newImageInput.value), function(r)
             {
                 if (r)
                 {
@@ -159,6 +183,7 @@ $(function(){
                 else
                 {
                     currentSession = session;
+                    socket.emit("resize", {cols: term.cols, rows: term.rows})
                     $('#infoModal').modal('hide');
                 }
             });
@@ -206,6 +231,10 @@ $(function(){
         socket.on('disconnect', function() {
             term.clear();
             term.write("Session Closed :(\n")
+        });
+
+        socket.on('updateUserList', function(users) {
+            updateUserList(users);
         });
         
         term.clear();

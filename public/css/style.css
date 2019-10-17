@@ -1,10 +1,19 @@
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+}::-webkit-scrollbar { /* WebKit */
+  width: 0;
+  height: 0;
+}
+
 html, body {
   height: 100%;
   width: 100%;
+  background-color: var(--color-bg);
 }
 
-.full-size {
-  height: 100%;
+.terminal-container {
+  height: calc(100% - 15px - 1em);
   width: 100%;
 }
 
@@ -18,4 +27,14 @@ html, body {
 .banner-error {
 	color: #fff;
 	background-color: #ff4e23;
+}
+
+.session-list {
+	background-color: var(--color-bg);
+	padding: 5px;
+}
+
+.session-list .badge {
+	background-color: var(--color-accent);
+	margin-right: 5px;
 }
