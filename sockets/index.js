@@ -45,7 +45,6 @@ module.exports = function(server) {
                     delete currentTerms[id].users[clientID];
                     if (Object.keys(currentTerms[id].users).length <= 0)
                     {
-                        console.log("closing " + id);
                         closeTerminal(id);
                     }
                     else
@@ -167,7 +166,6 @@ module.exports = function(server) {
         client.on('resize', function(size) {
             if (currentConnections[client.id].session != null)
             {
-                console.log("resizing");
                 currentConnections[client.id].session.raw.term.resize(size.cols, size.rows);
             }
         });
